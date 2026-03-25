@@ -1,4 +1,4 @@
-<api type="debug" assembly-name="Water-reminder" mvid="bf8403b4645748c08f6b52cae3d8f1e0">
+<api type="debug" assembly-name="Water-reminder" mvid="be8e87969525434ca335a7da561b661c">
   <java-to-managed>
     <entry java-name="crc64b985f93025ee50f0/MainActivity" managed-name="Water_reminder.MainActivity, Water-reminder" managed-type-token-id="33554441" />
     <entry java-name="crc64b985f93025ee50f0/MainApplication" managed-name="Water_reminder.MainApplication, Water-reminder" managed-type-token-id="33554442" />

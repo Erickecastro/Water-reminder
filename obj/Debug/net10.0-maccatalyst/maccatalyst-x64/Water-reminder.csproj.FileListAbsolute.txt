@@ -305,3 +305,4 @@ C:\Users\erickecastro\Water-reminder\obj\Debug\net10.0-maccatalyst\maccatalyst-x
 C:\Users\erickecastro\Water-reminder\obj\Debug\net10.0-maccatalyst\maccatalyst-x64\Water-reminder.pdb
 C:\Users\erickecastro\Water-reminder\obj\Debug\net10.0-maccatalyst\maccatalyst-x64\Water-reminder.genruntimeconfig.cache
 C:\Users\erickecastro\Water-reminder\obj\Debug\net10.0-maccatalyst\maccatalyst-x64\ref\Water-reminder.dll
+C:\Users\erickecastro\Water-reminder\obj\Debug\net10.0-maccatalyst\maccatalyst-x64\Water-reminder.sourcelink.json

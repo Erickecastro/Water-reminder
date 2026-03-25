@@ -516,3 +516,4 @@ C:\Users\erickecastro\Water-reminder\obj\Debug\net10.0-windows10.0.19041.0\win-x
 C:\Users\erickecastro\Water-reminder\obj\Debug\net10.0-windows10.0.19041.0\win-x64\qualifiers.txt
 C:\Users\erickecastro\Water-reminder\obj\Debug\net10.0-windows10.0.19041.0\win-x64\qualifiers.txt.intermediate
 C:\Users\erickecastro\Water-reminder\obj\Debug\net10.0-windows10.0.19041.0\win-x64\MultipleQualifiersPerDimensionFound.txt
+C:\Users\erickecastro\Water-reminder\obj\Debug\net10.0-windows10.0.19041.0\win-x64\Water-reminder.sourcelink.json
