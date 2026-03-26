@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace Water_reminder;
+﻿namespace Water_reminder;
 
 public partial class App : Application
 {
