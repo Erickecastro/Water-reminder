@@ -12,7 +12,7 @@
       <CodesignDisableTimestamp>true</CodesignDisableTimestamp>
       <CodesignKeychain></CodesignKeychain>
       <CodesignUseHardenedRuntime></CodesignUseHardenedRuntime>
-      <SourceProjectPath>C:\Users\erickecastro\Water-reminder</SourceProjectPath>
+      <SourceProjectPath>C:\Users\erick\Desktop\Estudos\Water-reminder</SourceProjectPath>
     </_CodesignBundle>
   </ItemGroup>
 </Project>
