@@ -17,7 +17,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Water-reminder")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+0a7173b9626c8933e3665c352f54042efe7a7ca9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+73844f4b08223e95ae66d177331924cf057c7777")]
 [assembly: System.Reflection.AssemblyProductAttribute("Water-reminder")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Water-reminder")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
