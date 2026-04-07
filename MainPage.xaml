@@ -12,22 +12,19 @@
                 Source="copoagua.png"
                 HeightRequest="185"
                 Aspect="AspectFit"
-                SemanticProperties.Description="dot net bot in a submarine number ten" />
+                SemanticProperties.Description="imagem copo de agua tela principal" />
 
             <Label
-                Text="Hello, World!"
-                Style="{StaticResource Headline}"
-                SemanticProperties.HeadingLevel="Level1" />
+                Text="Olá, Seja bem vindo!"
+                Style="{StaticResource Headline}"/>
 
             <Label
-                Text="Welcome to &#10;.NET Multi-platform App UI"
-                Style="{StaticResource SubHeadline}"
-                SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="Welcome to dot net Multi platform App U I" />
+                Text="Está pronto(a) para começar uma rotina de hidratação saudável?"
+                Style="{StaticResource SubHeadline}"/>
 
             <Button
                 x:Name="CounterBtn"
-                Text="Click me" 
+                Text="Ingeriu água hoje? Pressione aqui!" 
                 SemanticProperties.Hint="Counts the number of times you click"
                 Clicked="OnCounterClicked"
                 HorizontalOptions="Fill" />
