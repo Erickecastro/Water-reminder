@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Windows.Input;
 using Hydra.Core.Interfaces;
 using Hydra.Core.Models;
@@ -8,9 +9,14 @@ public class MainViewModel
 {
     private readonly IHydrationService _hydrationService;
     private readonly IUserRepository _userRepository;
+    private readonly SemaphoreSlim _addLock = new(1, 1);
     private int _todayTotal = 0;
     private int _dailyGoal = 2000;
     private string _progressText = "0 / 2000 ml";
+    private double _progressPercent = 0;
+    private int _remainingMl = 2000;
+    private bool _isBusy;
+    private string _statusLabel = "Faltam 2000 ml para sua meta";
 
     public MainViewModel(IHydrationService hydrationService, IUserRepository userRepository)
     {
@@ -47,6 +53,30 @@ public class MainViewModel
         set { _progressText = value; OnPropertyChanged(nameof(ProgressText)); }
     }
 
+    public double ProgressPercent
+    {
+        get => _progressPercent;
+        set { _progressPercent = value; OnPropertyChanged(nameof(ProgressPercent)); }
+    }
+
+    public int RemainingMl
+    {
+        get => _remainingMl;
+        set { _remainingMl = value; OnPropertyChanged(nameof(RemainingMl)); }
+    }
+
+    public bool IsBusy
+    {
+        get => _isBusy;
+        set { _isBusy = value; OnPropertyChanged(nameof(IsBusy)); }
+    }
+
+    public string StatusLabel
+    {
+        get => _statusLabel;
+        set { _statusLabel = value; OnPropertyChanged(nameof(StatusLabel)); }
+    }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected void OnPropertyChanged(string propertyName)
@@ -56,47 +86,80 @@ public class MainViewModel
 
     private async Task QuickAddAsync(int ml)
     {
-        var user = await _userRepository.GetFirstUserAsync();
-        if (user == null)
+        if (IsBusy) return;
+
+        await _addLock.WaitAsync();
+        try
         {
-            user = new Hydra.Core.Models.User
+            IsBusy = true;
+
+            var user = await _userRepository.GetFirstUserAsync();
+            if (user == null)
             {
-                Name = "You",
-                CreatedAt = DateTime.UtcNow,
-                LastUpdatedAt = DateTime.UtcNow,
-                DailyGoalMl = 2000,
-                OnboardingCompleted = false
+                user = new Hydra.Core.Models.User
+                {
+                    Name = "You",
+                    CreatedAt = DateTime.UtcNow,
+                    LastUpdatedAt = DateTime.UtcNow,
+                    DailyGoalMl = 2000,
+                    OnboardingCompleted = false
+                };
+                await _userRepository.AddAsync(user);
+            }
+
+            var entry = new HydrationEntry
+            {
+                UserId = user.Id,
+                AmountMl = ml,
+                IntakeTime = DateTime.UtcNow,
+                IsQuickAdd = true,
+                Source = "quick_add"
             };
-            await _userRepository.AddAsync(user);
+
+            await _hydrationService.AddIntakeAsync(entry);
+            await LoadDataAsync();
         }
-
-        var entry = new HydrationEntry
+        catch (Exception)
         {
-            UserId = user.Id,
-            AmountMl = ml,
-            IntakeTime = DateTime.UtcNow,
-            IsQuickAdd = true,
-            Source = "quick_add"
-        };
-
-        await _hydrationService.AddIntakeAsync(entry);
-        await LoadDataAsync();
+            // Keep the app alive even if the storage layer fails during testing.
+            StatusLabel = "Não foi possível registrar agora. Tente novamente.";
+        }
+        finally
+        {
+            IsBusy = false;
+            _addLock.Release();
+        }
     }
 
     public async Task LoadDataAsync()
     {
-        var user = await _userRepository.GetFirstUserAsync();
-        if (user == null)
+        try
+        {
+            var user = await _userRepository.GetFirstUserAsync();
+            if (user == null)
+            {
+                DailyGoal = 2000;
+                TodayTotal = 0;
+            }
+            else
+            {
+                DailyGoal = user.DailyGoalMl;
+                TodayTotal = await _hydrationService.GetTodayTotalAsync(user.Id);
+            }
+
+            ProgressPercent = DailyGoal > 0 ? Math.Min(1.0, TodayTotal / (double)DailyGoal) : 0;
+            RemainingMl = Math.Max(0, DailyGoal - TodayTotal);
+            ProgressText = $"{TodayTotal} / {DailyGoal} ml";
+            StatusLabel = RemainingMl <= 0 ? "Meta alcançada!" : $"Faltam {RemainingMl} ml para sua meta";
+        }
+        catch (Exception)
         {
             DailyGoal = 2000;
             TodayTotal = 0;
+            ProgressPercent = 0;
+            RemainingMl = 2000;
+            ProgressText = "0 / 2000 ml";
+            StatusLabel = "Não foi possível atualizar os dados agora.";
         }
-        else
-        {
-            DailyGoal = user.DailyGoalMl;
-            TodayTotal = await _hydrationService.GetTodayTotalAsync(user.Id);
-        }
-
-        ProgressText = $"{TodayTotal} / {DailyGoal} ml";
     }
 }

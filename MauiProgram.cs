@@ -36,7 +36,8 @@ public static class MauiProgram
 		builder.Services.AddScoped<IHydrationService, HydrationService>();
 		builder.Services.AddSingleton<INotificationService, LocalNotificationService>();
 
-		// ViewModels and other app services can be registered here
+		// Pages and view models
+		builder.Services.AddTransient<MainPage>();
 		builder.Services.AddTransient<Hydra.Presentation.ViewModels.MainViewModel>();
 		// HTTP client to backend API
 		builder.Services.AddHttpClient("HydraApi", client =>

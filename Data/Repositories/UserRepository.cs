@@ -1,5 +1,6 @@
 using Hydra.Core.Interfaces;
 using Hydra.Core.Models;
+using Hydra.Data.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hydra.Data.Repositories;
