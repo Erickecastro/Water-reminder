@@ -1,23 +1,33 @@
-﻿namespace Water_reminder;
+﻿using Hydra.Presentation.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Water_reminder;
 
 public partial class MainPage : ContentPage
 {
-	int count = 0;
+	private readonly MainViewModel _vm;
 
 	public MainPage()
 	{
 		InitializeComponent();
-	}
 
-	private void OnCounterClicked(object? sender, EventArgs e)
-	{
-		count++;
+		var services = Application.Current?.Handler?.MauiContext?.Services;
+        if (services != null)
+        {
+            _vm = services.GetService<MainViewModel>() ?? new MainViewModel(
+                services.GetRequiredService<Hydra.Core.Interfaces.IHydrationService>(),
+                services.GetRequiredService<Hydra.Core.Interfaces.IUserRepository>()
+            );
+        }
+        else
+        {
+            _vm = new MainViewModel(null!, null!);
+        }
 
-		if (count == 1)
-			CounterBtn.Text = $"Clicked {count} time";
-		else
-			CounterBtn.Text = $"Clicked {count} times";
+        BindingContext = _vm;
 
-		SemanticScreenReader.Announce(CounterBtn.Text);
+        // Load initial data
+        _ = Task.Run(() => _vm.LoadDataAsync());
 	}
 }
+
