@@ -37,6 +37,13 @@
     <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 
+  <!-- Exclude backend API sources and other non-shared folders from the single-project MAUI build -->
+  <ItemGroup>
+    <Compile Remove="Backend\**\*.cs" />
+    <EmbeddedResource Remove="Backend\**\*.*" />
+    <None Remove="Backend\**\*.*" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />

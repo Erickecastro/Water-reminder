@@ -1,10 +1,10 @@
-using Hydra.Core.Interfaces;
 using Plugin.LocalNotification;
+using Plugin.LocalNotification.AndroidOption;
 using Plugin.LocalNotification.AndroidOption;
 
 namespace Hydra.Infrastructure.Notifications;
 
-public class LocalNotificationService : INotificationService
+public class LocalNotificationService : Hydra.Core.Interfaces.INotificationService
 {
     public async Task InitializeAsync()
     {
