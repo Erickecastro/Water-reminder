@@ -5,6 +5,8 @@ using Hydra.Data.Repositories;
 using Hydra.Core.Interfaces;
 using Hydra.Core.Services;
 using Hydra.Infrastructure.Notifications;
+using Hydra.Infrastructure.Navigation;
+using Hydra.Infrastructure.Session;
 using Plugin.LocalNotification;
 
 namespace Water_reminder;
@@ -39,11 +41,15 @@ public static class MauiProgram
 		builder.Services.AddTransient<IHydrationService, HydrationService>();
 		builder.Services.AddTransient<Hydra.Core.Interfaces.INotificationService, LocalNotificationService>();
 		builder.Services.AddTransient<Hydra.Core.Interfaces.ISyncService, Hydra.Infrastructure.Sync.SyncService>();
+		builder.Services.AddSingleton<IUserSessionService, UserSessionService>();
+		builder.Services.AddSingleton<AppNavigation>();
 
 		builder.Services.AddSingleton<AppShell>();
+		builder.Services.AddTransient<LoginPage>();
 		builder.Services.AddTransient<MainPage>();
 		builder.Services.AddTransient<HistoryPage>();
 		builder.Services.AddTransient<SettingsPage>();
+		builder.Services.AddTransient<Hydra.Presentation.ViewModels.LoginViewModel>();
 		builder.Services.AddTransient<Hydra.Presentation.ViewModels.MainViewModel>();
 		builder.Services.AddTransient<Hydra.Presentation.ViewModels.HistoryViewModel>();
 		builder.Services.AddTransient<Hydra.Presentation.ViewModels.SettingsViewModel>();

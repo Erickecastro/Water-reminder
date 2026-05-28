@@ -8,8 +8,20 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="16">
             <Label Text="Configurações" FontSize="26" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
+            <Border Padding="16"
+                    BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource CardBackground}}"
+                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource CardBorder}}"
+                    StrokeShape="RoundRectangle 16">
+                <VerticalStackLayout Spacing="2">
+                    <Label Text="{Binding AccountName}" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
+                    <Label Text="{Binding AccountEmail}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondary}}" />
+                </VerticalStackLayout>
+            </Border>
 
-            <Border Padding="16" BackgroundColor="{StaticResource CardBackground}" Stroke="{StaticResource CardBorder}" StrokeShape="RoundRectangle 16">
+            <Border Padding="16"
+                    BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource CardBackground}}"
+                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource CardBorder}}"
+                    StrokeShape="RoundRectangle 16">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Meta diária (ml)" TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
                     <Label Text="{Binding DailyGoalMl, StringFormat='{0} ml'}" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource AccentBlue}" />
@@ -17,7 +29,10 @@
                 </VerticalStackLayout>
             </Border>
 
-            <Border Padding="16" BackgroundColor="{StaticResource CardBackground}" Stroke="{StaticResource CardBorder}" StrokeShape="RoundRectangle 16">
+            <Border Padding="16"
+                    BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource CardBackground}}"
+                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource CardBorder}}"
+                    StrokeShape="RoundRectangle 16">
                 <Grid ColumnDefinitions="*,Auto">
                     <VerticalStackLayout>
                         <Label Text="Lembretes" TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" FontAttributes="Bold" />
@@ -27,7 +42,10 @@
                 </Grid>
             </Border>
 
-            <Border Padding="16" BackgroundColor="{StaticResource CardBackground}" Stroke="{StaticResource CardBorder}" StrokeShape="RoundRectangle 16">
+            <Border Padding="16"
+                    BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource CardBackground}}"
+                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource CardBorder}}"
+                    StrokeShape="RoundRectangle 16">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Tema" TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" FontAttributes="Bold" />
                     <HorizontalStackLayout Spacing="8">
@@ -40,6 +58,25 @@
 
             <Button Text="Salvar alterações" Command="{Binding SaveCommand}" HeightRequest="52" CornerRadius="26" />
             <Label Text="{Binding StatusMessage}" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondary}}" HorizontalTextAlignment="Center" />
+
+            <Border Padding="16"
+                    BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource CardBackground}}"
+                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource CardBorder}}"
+                    StrokeShape="RoundRectangle 16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Conta" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
+                    <Label Text="Sair e voltar para a tela de login." FontSize="12"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondary}}" />
+                    <Button Text="Sair da conta"
+                            Command="{Binding LogoutCommand}"
+                            BackgroundColor="Transparent"
+                            TextColor="#D74646"
+                            BorderColor="#D74646"
+                            BorderWidth="1"
+                            CornerRadius="22"
+                            HeightRequest="46" />
+                </VerticalStackLayout>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

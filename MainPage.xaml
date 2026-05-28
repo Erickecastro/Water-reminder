@@ -4,68 +4,127 @@
              x:Class="Water_reminder.MainPage"
              BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource AppBackground}}">
 
-    <Grid RowDefinitions="Auto,*,Auto" Padding="20" RowSpacing="14">
+    <Grid RowDefinitions="Auto,*" Padding="20" RowSpacing="14">
         <VerticalStackLayout x:Name="HeaderContainer" Grid.Row="0" HorizontalOptions="Center" Spacing="6">
-            <Image Source="copoagua.png" WidthRequest="52" HeightRequest="52" HorizontalOptions="Center" />
-            <Label Text="Hydra" FontSize="32" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
-            <Label Text="Seu plano de hidratação" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondary}}" />
+            <Image Source="copoagua.png" WidthRequest="48" HeightRequest="48" HorizontalOptions="Center" />
+            <Label Text="Hydra" FontSize="30" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
+            <Label Text="{Binding WelcomeText}" HorizontalTextAlignment="Center" FontSize="13"
+                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondary}}" />
         </VerticalStackLayout>
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout x:Name="ContentContainer" Spacing="14">
-                <Border Padding="20" BackgroundColor="{StaticResource CardBackground}" Stroke="{StaticResource CardBorder}" StrokeShape="RoundRectangle 24">
+                <Border Padding="20"
+                        BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource CardBackground}}"
+                        Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource CardBorder}}"
+                        StrokeShape="RoundRectangle 24">
                     <VerticalStackLayout Spacing="12">
                         <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
                             <VerticalStackLayout>
-                                <Label Text="Consumo de hoje" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondary}}" />
-                                <Label Text="{Binding ProgressText}" FontSize="26" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
+                                <Label Text="Consumo de hoje"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondary}}" />
+                                <Label Text="{Binding ProgressText}" FontSize="26" FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
                             </VerticalStackLayout>
-                            <Border Padding="10,8" BackgroundColor="#22395A" StrokeThickness="0" StrokeShape="RoundRectangle 14">
-                                <Label Text="{Binding ProgressPercent, StringFormat='{0:P0}'}" TextColor="{StaticResource AccentBlue}" FontAttributes="Bold" />
+                            <Border Padding="10,8"
+                                    BackgroundColor="{AppThemeBinding Light=#E8F1FF, Dark=#22395A}"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 14">
+                                <Label Text="{Binding ProgressPercent, StringFormat='{0:P0}'}"
+                                       TextColor="{StaticResource AccentBlue}"
+                                       FontAttributes="Bold" />
                             </Border>
                         </Grid>
-                        <ProgressBar Progress="{Binding ProgressPercent}" HeightRequest="8" />
+
+                        <Grid x:Name="ProgressTrack" HeightRequest="12">
+                            <Border BackgroundColor="{AppThemeBinding Light=#DCE9FF, Dark=#2A3B58}"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 99" />
+                            <Border x:Name="ProgressFill"
+                                    HorizontalOptions="Start"
+                                    WidthRequest="0"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 99">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Color="#43B7FF" Offset="0" />
+                                        <GradientStop Color="#2E7CFF" Offset="1" />
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
+                        </Grid>
+
                         <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
                             <VerticalStackLayout>
-                                <Label Text="Meta" FontSize="12" TextColor="{StaticResource TextSecondary}" />
-                                <Label Text="{Binding DailyGoal, StringFormat='{0} ml'}" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
+                                <Label Text="Meta" FontSize="12"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondary}}" />
+                                <Label Text="{Binding DailyGoal, StringFormat='{0} ml'}" FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
                             </VerticalStackLayout>
                             <VerticalStackLayout HorizontalOptions="End">
-                                <Label Text="Restante" FontSize="12" HorizontalTextAlignment="End" TextColor="{StaticResource TextSecondary}" />
-                                <Label Text="{Binding RemainingMl, StringFormat='{0} ml'}" HorizontalTextAlignment="End" FontAttributes="Bold" TextColor="{StaticResource AccentBlue}" />
+                                <Label Text="Restante" FontSize="12" HorizontalTextAlignment="End"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondary}}" />
+                                <Label Text="{Binding RemainingMl, StringFormat='{0} ml'}"
+                                       HorizontalTextAlignment="End"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource AccentBlue}" />
                             </VerticalStackLayout>
                         </Grid>
+
+                        <Button Text="Zerar consumo de hoje"
+                                Command="{Binding ResetTodayCommand}"
+                                BackgroundColor="Transparent"
+                                TextColor="{StaticResource Primary}"
+                                BorderColor="{StaticResource Primary}"
+                                BorderWidth="1"
+                                CornerRadius="20"
+                                HeightRequest="42"
+                                FontSize="13"
+                                Pressed="OnActionPressed"
+                                Released="OnActionReleased" />
                     </VerticalStackLayout>
                 </Border>
 
-                <Border Padding="16" BackgroundColor="{StaticResource CardBackground}" Stroke="{StaticResource CardBorder}" StrokeShape="RoundRectangle 18">
+                <Border Padding="16"
+                        BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource CardBackground}}"
+                        Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource CardBorder}}"
+                        StrokeShape="RoundRectangle 18">
                     <VerticalStackLayout Spacing="6">
-                        <Label Text="{Binding StatusLabel}" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
-                        <Label Text="{Binding MotivationMessage}" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondary}}" />
+                        <Label Text="{Binding StatusLabel}" FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
+                        <Label Text="{Binding MotivationMessage}"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondary}}" />
                         <Label Text="{Binding LastIntakeLabel}" FontSize="12" TextColor="{StaticResource AccentBlue}" />
                     </VerticalStackLayout>
                 </Border>
 
-                <Border Padding="16" BackgroundColor="{StaticResource CardBackground}" Stroke="{StaticResource CardBorder}" StrokeShape="RoundRectangle 18">
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="Adicionar rápido" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
-                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
-                            <Button Grid.Row="0" Grid.Column="0" Text="+100 ml" Command="{Binding Add100Command}" />
-                            <Button Grid.Row="0" Grid.Column="1" Text="+250 ml" Command="{Binding Add250Command}" />
-                            <Button Grid.Row="1" Grid.Column="0" Text="+500 ml" Command="{Binding Add500Command}" />
-                            <Button Grid.Row="1" Grid.Column="1" Text="+1000 ml" Command="{Binding Add1000Command}" />
-                        </Grid>
-                    </VerticalStackLayout>
-                </Border>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Adicionar rápido" FontAttributes="Bold" Margin="4,0"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
+
+                    <Button Style="{StaticResource QuickAddPillButton}"
+                            Text="+ 100 ml    ›"
+                            Command="{Binding Add100Command}"
+                            Pressed="OnActionPressed"
+                            Released="OnActionReleased" />
+                    <Button Style="{StaticResource QuickAddPillButton}"
+                            Text="+ 250 ml    ›"
+                            Command="{Binding Add250Command}"
+                            Pressed="OnActionPressed"
+                            Released="OnActionReleased" />
+                    <Button Style="{StaticResource QuickAddPillPrimaryButton}"
+                            Text="+ 500 ml    ›"
+                            Command="{Binding Add500Command}"
+                            Pressed="OnActionPressed"
+                            Released="OnActionReleased" />
+                    <Button Style="{StaticResource QuickAddPillButton}"
+                            Text="+ 1000 ml    ›"
+                            Command="{Binding Add1000Command}"
+                            Pressed="OnActionPressed"
+                            Released="OnActionReleased" />
+                </VerticalStackLayout>
             </VerticalStackLayout>
         </ScrollView>
-
-        <Button x:Name="PrimaryActionButton"
-                Grid.Row="2"
-                Text="Registrar 250 ml"
-                Command="{Binding Add250Command}"
-                HeightRequest="56"
-                CornerRadius="28"
-                FontAttributes="Bold"/>
     </Grid>
 </ContentPage>

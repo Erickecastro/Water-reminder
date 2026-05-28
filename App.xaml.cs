@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Hydra.Core.Interfaces;
+using Hydra.Infrastructure.Navigation;
 
 namespace Water_reminder;
 
@@ -14,7 +15,9 @@ public partial class App : Application
 
 	protected override Window CreateWindow(IActivationState? activationState)
 	{
-		var shell = _serviceProvider.GetRequiredService<AppShell>();
-		return new Window(shell);
+		var sessionService = _serviceProvider.GetRequiredService<IUserSessionService>();
+		sessionService.InitializeAsync().GetAwaiter().GetResult();
+
+		return _serviceProvider.GetRequiredService<AppNavigation>().CreateRootWindow();
 	}
 }

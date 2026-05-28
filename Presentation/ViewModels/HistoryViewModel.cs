@@ -16,10 +16,12 @@ public class HistoryViewModel : ViewModelBase
         _hydrationService = hydrationService;
         _userRepository = userRepository;
         RefreshCommand = new Command(async () => await LoadAsync());
+        ClearTodayCommand = new Command(async () => await ClearTodayAsync(), () => !IsBusy);
     }
 
     public ObservableCollection<HistoryItem> Entries { get; } = new();
     public ICommand RefreshCommand { get; }
+    public ICommand ClearTodayCommand { get; }
 
     public string TodaySummary
     {
@@ -64,6 +66,33 @@ public class HistoryViewModel : ViewModelBase
                     entry.IntakeTime.ToLocalTime().ToString("HH:mm"),
                     entry.Source ?? "manual"));
             }
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    public async Task ClearTodayAsync()
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            var user = await _userRepository.GetFirstUserAsync();
+            if (user is null)
+            {
+                Entries.Clear();
+                TodaySummary = "Sem registros";
+                return;
+            }
+
+            await _hydrationService.ClearTodayAsync(user.Id);
+            await LoadAsync();
         }
         finally
         {

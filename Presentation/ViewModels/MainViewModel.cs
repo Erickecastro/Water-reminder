@@ -9,6 +9,7 @@ public class MainViewModel : ViewModelBase
 {
     private readonly IHydrationService _hydrationService;
     private readonly IUserRepository _userRepository;
+    private readonly IUserSessionService _sessionService;
     private readonly SemaphoreSlim _addLock = new(1, 1);
     private int _todayTotal = 0;
     private int _dailyGoal = 2000;
@@ -19,16 +20,22 @@ public class MainViewModel : ViewModelBase
     private string _statusLabel = "Faltam 2000 ml para sua meta";
     private string _motivationMessage = "Seu corpo agradece cada gole.";
     private string _lastIntakeLabel = "Nenhum registro hoje";
+    private string _welcomeText = "Vamos manter sua hidratação em dia?";
 
-    public MainViewModel(IHydrationService hydrationService, IUserRepository userRepository)
+    public MainViewModel(
+        IHydrationService hydrationService,
+        IUserRepository userRepository,
+        IUserSessionService sessionService)
     {
         _hydrationService = hydrationService;
         _userRepository = userRepository;
+        _sessionService = sessionService;
         Add100Command = new Command(async () => await QuickAddAsync(100));
         Add250Command = new Command(async () => await QuickAddAsync(250));
         Add500Command = new Command(async () => await QuickAddAsync(500));
         Add1000Command = new Command(async () => await QuickAddAsync(1000));
         LoadDataCommand = new Command(async () => await LoadDataAsync());
+        ResetTodayCommand = new Command(async () => await ResetTodayAsync(), () => !IsBusy);
     }
 
     public ICommand Add100Command { get; }
@@ -36,6 +43,7 @@ public class MainViewModel : ViewModelBase
     public ICommand Add500Command { get; }
     public ICommand Add1000Command { get; }
     public ICommand LoadDataCommand { get; }
+    public ICommand ResetTodayCommand { get; }
 
     public int TodayTotal
     {
@@ -70,7 +78,13 @@ public class MainViewModel : ViewModelBase
     public bool IsBusy
     {
         get => _isBusy;
-        set { _isBusy = value; OnPropertyChanged(nameof(IsBusy)); }
+        set
+        {
+            if (SetProperty(ref _isBusy, value))
+            {
+                (ResetTodayCommand as Command)?.ChangeCanExecute();
+            }
+        }
     }
 
     public string StatusLabel
@@ -89,6 +103,43 @@ public class MainViewModel : ViewModelBase
     {
         get => _lastIntakeLabel;
         set => SetProperty(ref _lastIntakeLabel, value);
+    }
+
+    public string WelcomeText
+    {
+        get => _welcomeText;
+        set => SetProperty(ref _welcomeText, value);
+    }
+
+    public async Task ResetTodayAsync()
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            var user = await EnsureUserAsync();
+            if (user is null)
+            {
+                return;
+            }
+
+            await _hydrationService.ClearTodayAsync(user.Id);
+            await LoadDataAsync();
+            StatusLabel = "Consumo de hoje zerado";
+            MotivationMessage = "Tudo pronto para recomeçar!";
+        }
+        catch
+        {
+            StatusLabel = "Não foi possível zerar agora.";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private async Task QuickAddAsync(int ml)
@@ -135,6 +186,11 @@ public class MainViewModel : ViewModelBase
     {
         try
         {
+            var displayName = _sessionService.CurrentSession?.Name;
+            WelcomeText = string.IsNullOrWhiteSpace(displayName)
+                ? "Você não vai mais esquecer de beber água."
+                : $"{displayName}, você não vai mais esquecer de beber água.";
+
             var user = await EnsureUserAsync();
             if (user == null)
             {
@@ -182,12 +238,19 @@ public class MainViewModel : ViewModelBase
         var user = await _userRepository.GetFirstUserAsync();
         if (user != null)
         {
+            var sessionName = _sessionService.CurrentSession?.Name;
+            if (!string.IsNullOrWhiteSpace(sessionName) && !string.Equals(user.Name, sessionName, StringComparison.Ordinal))
+            {
+                user.Name = sessionName;
+                user.LastUpdatedAt = DateTime.UtcNow;
+                await _userRepository.UpdateAsync(user);
+            }
             return user;
         }
 
         user = new User
         {
-            Name = "Você",
+            Name = _sessionService.CurrentSession?.Name ?? "Você",
             CreatedAt = DateTime.UtcNow,
             LastUpdatedAt = DateTime.UtcNow,
             DailyGoalMl = 2000,

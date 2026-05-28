@@ -34,4 +34,9 @@ public class HydrationService : IHydrationService
         var entries = await GetTodayEntriesAsync(userId, cancellationToken);
         return entries.Sum(e => e.AmountMl);
     }
+
+    public Task ClearTodayAsync(int userId, CancellationToken cancellationToken = default)
+    {
+        return _hydrationRepository.ClearForDateAsync(userId, DateTime.UtcNow.Date, cancellationToken);
+    }
 }

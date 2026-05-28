@@ -31,4 +31,21 @@ public class HydrationRepository : RepositoryBase<HydrationEntry>, IHydrationRep
             .OrderBy(h => h.LastModifiedUtc)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task ClearForDateAsync(int userId, DateTime date, CancellationToken cancellationToken = default)
+    {
+        var start = date.Date;
+        var end = start.AddDays(1);
+        var entries = await _context.Set<HydrationEntry>()
+            .Where(h => h.UserId == userId && h.IntakeTime >= start && h.IntakeTime < end)
+            .ToListAsync(cancellationToken);
+
+        if (entries.Count == 0)
+        {
+            return;
+        }
+
+        _context.Set<HydrationEntry>().RemoveRange(entries);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
 }
