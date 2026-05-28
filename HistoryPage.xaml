@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Water_reminder.HistoryPage"
+             Title="Histórico"
+             BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource AppBackground}}">
+
+    <Grid RowDefinitions="Auto,*" Padding="20" RowSpacing="16">
+        <VerticalStackLayout>
+            <Label Text="Histórico de hoje" FontSize="26" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
+            <Label Text="{Binding TodaySummary}" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondary}}" />
+        </VerticalStackLayout>
+
+        <RefreshView Grid.Row="1" Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding Entries}" SelectionMode="None">
+                <CollectionView.EmptyView>
+                    <Label Text="Nenhum consumo registrado hoje." HorizontalOptions="Center" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondary}}" />
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Padding="14" Margin="0,6" BackgroundColor="{StaticResource CardBackground}" Stroke="{StaticResource CardBorder}" StrokeShape="RoundRectangle 16">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Label Text="💧" FontSize="20" VerticalOptions="Center"/>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                    <Label Text="{Binding AmountMl, StringFormat='{0} ml'}" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
+                                    <Label Text="{Binding Source}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondary}}" />
+                                </VerticalStackLayout>
+                                <Label Grid.Column="2" Text="{Binding TimeText}" VerticalOptions="Center" TextColor="{StaticResource AccentBlue}" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

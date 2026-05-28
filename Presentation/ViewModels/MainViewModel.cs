@@ -1,11 +1,11 @@
-using System.ComponentModel;
 using System.Windows.Input;
 using Hydra.Core.Interfaces;
 using Hydra.Core.Models;
+using Microsoft.Maui.Controls;
 
 namespace Hydra.Presentation.ViewModels;
 
-public class MainViewModel
+public class MainViewModel : ViewModelBase
 {
     private readonly IHydrationService _hydrationService;
     private readonly IUserRepository _userRepository;
@@ -17,6 +17,8 @@ public class MainViewModel
     private int _remainingMl = 2000;
     private bool _isBusy;
     private string _statusLabel = "Faltam 2000 ml para sua meta";
+    private string _motivationMessage = "Seu corpo agradece cada gole.";
+    private string _lastIntakeLabel = "Nenhum registro hoje";
 
     public MainViewModel(IHydrationService hydrationService, IUserRepository userRepository)
     {
@@ -77,11 +79,16 @@ public class MainViewModel
         set { _statusLabel = value; OnPropertyChanged(nameof(StatusLabel)); }
     }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected void OnPropertyChanged(string propertyName)
+    public string MotivationMessage
     {
-        PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+        get => _motivationMessage;
+        set => SetProperty(ref _motivationMessage, value);
+    }
+
+    public string LastIntakeLabel
+    {
+        get => _lastIntakeLabel;
+        set => SetProperty(ref _lastIntakeLabel, value);
     }
 
     private async Task QuickAddAsync(int ml)
@@ -93,18 +100,11 @@ public class MainViewModel
         {
             IsBusy = true;
 
-            var user = await _userRepository.GetFirstUserAsync();
-            if (user == null)
+            var user = await EnsureUserAsync();
+            if (user is null)
             {
-                user = new Hydra.Core.Models.User
-                {
-                    Name = "You",
-                    CreatedAt = DateTime.UtcNow,
-                    LastUpdatedAt = DateTime.UtcNow,
-                    DailyGoalMl = 2000,
-                    OnboardingCompleted = false
-                };
-                await _userRepository.AddAsync(user);
+                StatusLabel = "Não foi possível acessar o usuário.";
+                return;
             }
 
             var entry = new HydrationEntry
@@ -135,22 +135,34 @@ public class MainViewModel
     {
         try
         {
-            var user = await _userRepository.GetFirstUserAsync();
+            var user = await EnsureUserAsync();
             if (user == null)
             {
                 DailyGoal = 2000;
                 TodayTotal = 0;
+                LastIntakeLabel = "Nenhum registro hoje";
             }
             else
             {
                 DailyGoal = user.DailyGoalMl;
-                TodayTotal = await _hydrationService.GetTodayTotalAsync(user.Id);
+                var todayEntries = (await _hydrationService.GetTodayEntriesAsync(user.Id))
+                    .OrderByDescending(e => e.IntakeTime)
+                    .ToList();
+                TodayTotal = todayEntries.Sum(e => e.AmountMl);
+                LastIntakeLabel = todayEntries.Count == 0
+                    ? "Nenhum registro hoje"
+                    : $"Último registro: {todayEntries[0].AmountMl} ml às {todayEntries[0].IntakeTime.ToLocalTime():HH:mm}";
             }
 
             ProgressPercent = DailyGoal > 0 ? Math.Min(1.0, TodayTotal / (double)DailyGoal) : 0;
             RemainingMl = Math.Max(0, DailyGoal - TodayTotal);
             ProgressText = $"{TodayTotal} / {DailyGoal} ml";
             StatusLabel = RemainingMl <= 0 ? "Meta alcançada!" : $"Faltam {RemainingMl} ml para sua meta";
+            MotivationMessage = RemainingMl <= 0
+                ? "Excelente! Continue mantendo seu ritmo."
+                : RemainingMl <= 500
+                    ? "Você está quase lá. Só mais um pouco!"
+                    : "Seu corpo agradece cada gole.";
         }
         catch (Exception)
         {
@@ -160,6 +172,30 @@ public class MainViewModel
             RemainingMl = 2000;
             ProgressText = "0 / 2000 ml";
             StatusLabel = "Não foi possível atualizar os dados agora.";
+            LastIntakeLabel = "Sem dados";
+            MotivationMessage = "Vamos retomar sua hidratação.";
         }
+    }
+
+    private async Task<User?> EnsureUserAsync()
+    {
+        var user = await _userRepository.GetFirstUserAsync();
+        if (user != null)
+        {
+            return user;
+        }
+
+        user = new User
+        {
+            Name = "Você",
+            CreatedAt = DateTime.UtcNow,
+            LastUpdatedAt = DateTime.UtcNow,
+            DailyGoalMl = 2000,
+            OnboardingCompleted = true,
+            PreferredTheme = "system"
+        };
+
+        await _userRepository.AddAsync(user);
+        return user;
     }
 }

@@ -1,68 +1,71 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Water_reminder.MainPage"
-             BackgroundColor="#07111F"
-             xmlns:vm="clr-namespace:Hydra.Presentation.ViewModels">
+             BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource AppBackground}}">
 
-    <Grid Padding="20" RowSpacing="18">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-
-        <VerticalStackLayout Spacing="4">
-            <Label Text="Hydra" FontSize="30" FontAttributes="Bold" TextColor="White" />
-            <Label Text="Seu plano de hidratação inteligente" TextColor="#A6B7D4" FontSize="14" />
+    <Grid RowDefinitions="Auto,*,Auto" Padding="20" RowSpacing="14">
+        <VerticalStackLayout x:Name="HeaderContainer" Grid.Row="0" HorizontalOptions="Center" Spacing="6">
+            <Image Source="copoagua.png" WidthRequest="52" HeightRequest="52" HorizontalOptions="Center" />
+            <Label Text="Hydra" FontSize="32" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
+            <Label Text="Seu plano de hidratação" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondary}}" />
         </VerticalStackLayout>
 
-        <Frame Grid.Row="1" Padding="18" CornerRadius="28" BackgroundColor="#0B1729" HasShadow="True">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="14">
-                <VerticalStackLayout Spacing="6">
-                    <Label Text="Hoje" TextColor="#8EA3BF" FontSize="13" />
-                    <Label Text="{Binding ProgressText}" TextColor="White" FontSize="22" FontAttributes="Bold" />
-                    <Label Text="{Binding StatusLabel}" TextColor="#6EE7B7" FontSize="13" />
-                </VerticalStackLayout>
-                <Border Stroke="#1F3A5A" StrokeThickness="1" Padding="10" BackgroundColor="#08101D" WidthRequest="64" HeightRequest="64" StrokeShape="RoundRectangle 32">
-                    <Label Text="{Binding TodayTotal, StringFormat='{0} ml'}" TextColor="White" FontSize="11" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout x:Name="ContentContainer" Spacing="14">
+                <Border Padding="20" BackgroundColor="{StaticResource CardBackground}" Stroke="{StaticResource CardBorder}" StrokeShape="RoundRectangle 24">
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                            <VerticalStackLayout>
+                                <Label Text="Consumo de hoje" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondary}}" />
+                                <Label Text="{Binding ProgressText}" FontSize="26" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
+                            </VerticalStackLayout>
+                            <Border Padding="10,8" BackgroundColor="#22395A" StrokeThickness="0" StrokeShape="RoundRectangle 14">
+                                <Label Text="{Binding ProgressPercent, StringFormat='{0:P0}'}" TextColor="{StaticResource AccentBlue}" FontAttributes="Bold" />
+                            </Border>
+                        </Grid>
+                        <ProgressBar Progress="{Binding ProgressPercent}" HeightRequest="8" />
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                            <VerticalStackLayout>
+                                <Label Text="Meta" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                                <Label Text="{Binding DailyGoal, StringFormat='{0} ml'}" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout HorizontalOptions="End">
+                                <Label Text="Restante" FontSize="12" HorizontalTextAlignment="End" TextColor="{StaticResource TextSecondary}" />
+                                <Label Text="{Binding RemainingMl, StringFormat='{0} ml'}" HorizontalTextAlignment="End" FontAttributes="Bold" TextColor="{StaticResource AccentBlue}" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
                 </Border>
-            </Grid>
-        </Frame>
 
-        <Frame Grid.Row="2" Padding="18" CornerRadius="28" BackgroundColor="#0D1B2D" HasShadow="True">
-            <VerticalStackLayout Spacing="14">
-                <Label Text="Progresso da meta" TextColor="#DCE8FF" FontSize="14" FontAttributes="Bold" />
-                <ProgressBar Progress="{Binding ProgressPercent}" HeightRequest="10" BackgroundColor="#17263A" ProgressColor="#40C4FF" />
+                <Border Padding="16" BackgroundColor="{StaticResource CardBackground}" Stroke="{StaticResource CardBorder}" StrokeShape="RoundRectangle 18">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="{Binding StatusLabel}" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
+                        <Label Text="{Binding MotivationMessage}" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondary}}" />
+                        <Label Text="{Binding LastIntakeLabel}" FontSize="12" TextColor="{StaticResource AccentBlue}" />
+                    </VerticalStackLayout>
+                </Border>
 
-                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                    <Border Stroke="#1F3A5A" StrokeThickness="1" Padding="12" BackgroundColor="#0B1729" StrokeShape="RoundRectangle 18">
-                        <VerticalStackLayout Spacing="2">
-                            <Label Text="Meta diária" TextColor="#8EA3BF" FontSize="12" />
-                            <Label Text="{Binding DailyGoal, StringFormat='{0} ml'}" TextColor="White" FontSize="18" FontAttributes="Bold" />
-                        </VerticalStackLayout>
-                    </Border>
-                    <Border Stroke="#1F3A5A" StrokeThickness="1" Padding="12" BackgroundColor="#0B1729" StrokeShape="RoundRectangle 18">
-                        <VerticalStackLayout Spacing="2">
-                            <Label Text="Restante" TextColor="#8EA3BF" FontSize="12" />
-                            <Label Text="{Binding RemainingMl, StringFormat='{0} ml'}" TextColor="White" FontSize="18" FontAttributes="Bold" />
-                        </VerticalStackLayout>
-                    </Border>
-                </Grid>
-
-                <Label Text="Adicione rapidamente sua próxima refeição de água:" TextColor="#A6B7D4" FontSize="13" />
-
-                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
-                    <Button Text="+100 ml" Command="{Binding Add100Command}" BackgroundColor="#122F4A" TextColor="White" CornerRadius="18" HeightRequest="48" />
-                    <Button Text="+250 ml" Command="{Binding Add250Command}" BackgroundColor="#163B5D" TextColor="White" CornerRadius="18" HeightRequest="48" />
-                    <Button Text="+500 ml" Command="{Binding Add500Command}" BackgroundColor="#1B4D7A" TextColor="White" CornerRadius="18" HeightRequest="48" />
-                    <Button Text="+1 L" Command="{Binding Add1000Command}" BackgroundColor="#2E7CFF" TextColor="White" CornerRadius="18" HeightRequest="48" />
-                </Grid>
+                <Border Padding="16" BackgroundColor="{StaticResource CardBackground}" Stroke="{StaticResource CardBorder}" StrokeShape="RoundRectangle 18">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Adicionar rápido" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                            <Button Grid.Row="0" Grid.Column="0" Text="+100 ml" Command="{Binding Add100Command}" />
+                            <Button Grid.Row="0" Grid.Column="1" Text="+250 ml" Command="{Binding Add250Command}" />
+                            <Button Grid.Row="1" Grid.Column="0" Text="+500 ml" Command="{Binding Add500Command}" />
+                            <Button Grid.Row="1" Grid.Column="1" Text="+1000 ml" Command="{Binding Add1000Command}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
             </VerticalStackLayout>
-        </Frame>
+        </ScrollView>
 
-        <Button Grid.Row="3" Text="Registrar agora" HorizontalOptions="Fill" CornerRadius="28" HeightRequest="56" BackgroundColor="#1E90FF" TextColor="White" Command="{Binding Add250Command}" />
+        <Button x:Name="PrimaryActionButton"
+                Grid.Row="2"
+                Text="Registrar 250 ml"
+                Command="{Binding Add250Command}"
+                HeightRequest="56"
+                CornerRadius="28"
+                FontAttributes="Bold"/>
     </Grid>
 </ContentPage>

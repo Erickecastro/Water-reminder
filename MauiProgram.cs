@@ -1,10 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Hydra.Data.Database;
 using Hydra.Data.Repositories;
 using Hydra.Core.Interfaces;
 using Hydra.Core.Services;
 using Hydra.Infrastructure.Notifications;
+using Plugin.LocalNotification;
 
 namespace Water_reminder;
 
@@ -15,6 +16,7 @@ public static class MauiProgram
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
+			.UseLocalNotification()
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -22,36 +24,47 @@ public static class MauiProgram
 			});
 
 		// Configure DI and services
-		var dbPath = Path.Combine(FileSystem.AppDataDirectory, "hydra.db");
 		builder.Services.AddDbContext<HydraDbContext>(options =>
 		{
-			options.UseSqlite($"Data Source={dbPath}");
+            try {
+                var dbPath = Path.Combine(FileSystem.AppDataDirectory, "hydra.db");
+			    options.UseSqlite($"Data Source={dbPath}");
+            } catch {
+                options.UseSqlite("Data Source=hydra.db");
+            }
 		});
 
-		// Repositories
-		builder.Services.AddScoped<IUserRepository, UserRepository>();
-		builder.Services.AddScoped<IHydrationRepository, HydrationRepository>();
+		builder.Services.AddTransient<IUserRepository, UserRepository>();
+		builder.Services.AddTransient<IHydrationRepository, HydrationRepository>();
+		builder.Services.AddTransient<IHydrationService, HydrationService>();
+		builder.Services.AddTransient<Hydra.Core.Interfaces.INotificationService, LocalNotificationService>();
+		builder.Services.AddTransient<Hydra.Core.Interfaces.ISyncService, Hydra.Infrastructure.Sync.SyncService>();
 
-		// Services
-		builder.Services.AddScoped<IHydrationService, HydrationService>();
-		builder.Services.AddSingleton<INotificationService, LocalNotificationService>();
-
-		// Pages and view models
+		builder.Services.AddSingleton<AppShell>();
 		builder.Services.AddTransient<MainPage>();
+		builder.Services.AddTransient<HistoryPage>();
+		builder.Services.AddTransient<SettingsPage>();
 		builder.Services.AddTransient<Hydra.Presentation.ViewModels.MainViewModel>();
-		// HTTP client to backend API
+		builder.Services.AddTransient<Hydra.Presentation.ViewModels.HistoryViewModel>();
+		builder.Services.AddTransient<Hydra.Presentation.ViewModels.SettingsViewModel>();
+
 		builder.Services.AddHttpClient("HydraApi", client =>
 		{
-			client.BaseAddress = new Uri(builder.Configuration["Backend:BaseUrl"] ?? "https://api.yourhydra.app/");
+			client.BaseAddress = new Uri("https://api.yourhydra.app/");
 		});
-
-		// Sync service
-		builder.Services.AddSingleton<Hydra.Core.Interfaces.ISyncService, Hydra.Infrastructure.Sync.SyncService>();
 
 #if DEBUG
 		builder.Logging.AddDebug();
 #endif
 
-		return builder.Build();
+		var app = builder.Build();
+
+		using (var scope = app.Services.CreateScope())
+		{
+			var db = scope.ServiceProvider.GetRequiredService<HydraDbContext>();
+			db.Database.EnsureCreated();
+		}
+
+		return app;
 	}
 }
