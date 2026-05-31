@@ -8,5 +8,6 @@ public interface IUserSessionService
     UserSession? CurrentSession { get; }
     Task InitializeAsync();
     Task SignInAsync(string name, string email, string password);
+    Task UpdateProfileAsync(string name, string email, string password);
     Task SignOutAsync();
 }

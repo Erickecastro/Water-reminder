@@ -8,6 +8,6 @@
     Shell.TabBarForegroundColor="{StaticResource Primary}"
     Shell.TabBarTitleColor="{StaticResource Primary}"
     Shell.TabBarUnselectedColor="{StaticResource TextSecondary}"
-    Title="Hydra">
+    Title="Hidrat&#xE9;">
 
 </Shell>

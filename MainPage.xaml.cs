@@ -1,4 +1,5 @@
 using Hydra.Presentation.ViewModels;
+using Hydra.Infrastructure.Navigation;
 using System.ComponentModel;
 
 namespace Water_reminder;
@@ -6,41 +7,21 @@ namespace Water_reminder;
 public partial class MainPage : ContentPage
 {
     private readonly MainViewModel _vm;
-    private bool _animated;
-    private double _lastProgress;
+    private readonly AppNavigation _navigation;
 
-    public MainPage(MainViewModel viewModel)
+    public MainPage(MainViewModel viewModel, AppNavigation navigation)
     {
         InitializeComponent();
         _vm = viewModel;
+        _navigation = navigation;
         BindingContext = _vm;
         _vm.PropertyChanged += OnViewModelPropertyChanged;
-        ProgressTrack.SizeChanged += async (_, _) => await AnimateProgressFill(_vm.ProgressPercent, 1);
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
         await _vm.LoadDataAsync();
-        await AnimateProgressFill(_vm.ProgressPercent, 380);
-
-        if (_animated)
-        {
-            return;
-        }
-
-        HeaderContainer.Opacity = 0;
-        HeaderContainer.TranslationY = -14;
-        ContentContainer.Opacity = 0;
-        ContentContainer.TranslationY = 18;
-
-        await Task.WhenAll(
-            HeaderContainer.FadeTo(1, 280, Easing.CubicOut),
-            HeaderContainer.TranslateTo(0, 0, 280, Easing.CubicOut),
-            ContentContainer.FadeTo(1, 360, Easing.CubicOut),
-            ContentContainer.TranslateTo(0, 0, 360, Easing.CubicOut));
-
-        _animated = true;
     }
 
     private async void OnActionPressed(object? sender, EventArgs e)
@@ -59,27 +40,29 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private async void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private async void OnHydrationButtonClicked(object? sender, EventArgs e)
+    {
+        await CupMascot.CelebrateAsync();
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(MainViewModel.ProgressPercent))
         {
-            await AnimateProgressFill(_vm.ProgressPercent, 450);
+            ProgressCup.Progress = _vm.ProgressPercent;
         }
     }
 
-    private async Task AnimateProgressFill(double progress, uint duration)
+    private void OnNavigateRequested(object? sender, string tab)
     {
-        if (ProgressTrack.Width <= 0)
+        if (tab == "History")
         {
-            return;
+            _navigation.NavigateToHistory();
         }
-
-        var clamped = Math.Clamp(progress, 0, 1);
-        var target = ProgressTrack.Width * clamped;
-        ProgressFill.AnchorX = 0;
-        ProgressFill.WidthRequest = ProgressTrack.Width * _lastProgress;
-        await ProgressFill.LayoutTo(new Rect(0, 0, target, ProgressTrack.Height), duration, Easing.CubicInOut);
-        _lastProgress = clamped;
+        else if (tab == "Settings")
+        {
+            _navigation.NavigateToSettings();
+        }
     }
 }
 

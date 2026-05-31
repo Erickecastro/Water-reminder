@@ -20,7 +20,7 @@ public class MainViewModel : ViewModelBase
     private string _statusLabel = "Faltam 2000 ml para sua meta";
     private string _motivationMessage = "Seu corpo agradece cada gole.";
     private string _lastIntakeLabel = "Nenhum registro hoje";
-    private string _welcomeText = "Vamos manter sua hidratação em dia?";
+    private string _welcomeText = "Dizer que esqueceu de beber água não será mais desculpa!";
 
     public MainViewModel(
         IHydrationService hydrationService,
@@ -186,10 +186,7 @@ public class MainViewModel : ViewModelBase
     {
         try
         {
-            var displayName = _sessionService.CurrentSession?.Name;
-            WelcomeText = string.IsNullOrWhiteSpace(displayName)
-                ? "Você não vai mais esquecer de beber água."
-                : $"{displayName}, você não vai mais esquecer de beber água.";
+            WelcomeText = "Dizer que esqueceu de beber água não será mais desculpa!";
 
             var user = await EnsureUserAsync();
             if (user == null)

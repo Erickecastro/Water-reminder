@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Hydra API",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-api",
+            "program": "${workspaceFolder}/Backend/bin/Debug/net8.0/Hydra.Api.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Backend",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        }
+    ]
+}

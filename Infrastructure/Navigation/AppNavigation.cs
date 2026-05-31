@@ -8,6 +8,10 @@ public class AppNavigation
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IUserSessionService _sessionService;
+    private MainPage? _mainPage;
+    private HistoryPage? _historyPage;
+    private SettingsPage? _settingsPage;
+    private bool _isTransitioning;
 
     public AppNavigation(IServiceProvider serviceProvider, IUserSessionService sessionService)
     {
@@ -17,21 +21,13 @@ public class AppNavigation
 
     public Window CreateRootWindow()
     {
-        var loginPage = CreateLoginPage();
-        return new Window(loginPage);
+        return new Window(_sessionService.IsSignedIn ? GetMainPage() : CreateWelcomePage());
     }
 
     public async Task NavigateToLoginAsync()
     {
         await _sessionService.SignOutAsync();
-
-        var window = Application.Current?.Windows.FirstOrDefault();
-        if (window is null)
-        {
-            return;
-        }
-
-        window.Page = CreateLoginPage();
+        await SetRootPageAsync(CreateLoginPage());
     }
 
     private LoginPage CreateLoginPage()
@@ -42,19 +38,104 @@ public class AppNavigation
         return loginPage;
     }
 
-    private void OnSignedIn(object? sender, EventArgs e)
+    private WelcomePage CreateWelcomePage()
+    {
+        var welcomePage = _serviceProvider.GetRequiredService<WelcomePage>();
+        welcomePage.ContinueRequested -= OnWelcomeContinueRequested;
+        welcomePage.ContinueRequested += OnWelcomeContinueRequested;
+        return welcomePage;
+    }
+
+    private async void OnWelcomeContinueRequested(object? sender, EventArgs e)
+    {
+        if (sender is WelcomePage welcomePage)
+        {
+            welcomePage.ContinueRequested -= OnWelcomeContinueRequested;
+        }
+
+        await SetRootPageAsync(CreateLoginPage());
+    }
+
+    private async void OnSignedIn(object? sender, EventArgs e)
     {
         if (sender is LoginPage loginPage)
         {
             loginPage.SignedIn -= OnSignedIn;
         }
 
+        await SetRootPageAsync(GetMainPage());
+    }
+
+    public void NavigateToMain()
+    {
+        _ = SetRootPageAsync(GetMainPage());
+    }
+
+    public void NavigateToHistory()
+    {
+        _ = SetRootPageAsync(_historyPage ??= _serviceProvider.GetRequiredService<HistoryPage>());
+    }
+
+    public void NavigateToSettings()
+    {
+        _ = SetRootPageAsync(_settingsPage ??= _serviceProvider.GetRequiredService<SettingsPage>());
+    }
+
+    private MainPage GetMainPage()
+    {
+        return _mainPage ??= _serviceProvider.GetRequiredService<MainPage>();
+    }
+
+    private async Task SetRootPageAsync(Page page)
+    {
         var window = Application.Current?.Windows.FirstOrDefault();
-        if (window is null)
+        if (window is null || ReferenceEquals(window.Page, page) || _isTransitioning)
         {
             return;
         }
 
-        window.Page = _serviceProvider.GetRequiredService<AppShell>();
+        _isTransitioning = true;
+
+        var outgoing = GetTransitionTarget(window.Page);
+        var incoming = GetTransitionTarget(page);
+
+        if (incoming is not null)
+        {
+            incoming.Opacity = 0;
+        }
+
+        if (outgoing is not null)
+        {
+            await outgoing.FadeTo(0, 95, Easing.SinInOut);
+        }
+
+        window.Page = page;
+
+        if (incoming is not null)
+        {
+            await incoming.FadeTo(1, 125, Easing.SinInOut);
+        }
+
+        if (outgoing is not null)
+        {
+            outgoing.Opacity = 1;
+        }
+
+        _isTransitioning = false;
+    }
+
+    private static VisualElement? GetTransitionTarget(Page? page)
+    {
+        if (page is not ContentPage contentPage)
+        {
+            return null;
+        }
+
+        if (contentPage.Content is Grid grid && grid.Children.Count > 1)
+        {
+            return grid.Children[^1] as VisualElement;
+        }
+
+        return contentPage.Content;
     }
 }

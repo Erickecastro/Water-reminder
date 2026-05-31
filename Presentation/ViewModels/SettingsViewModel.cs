@@ -12,10 +12,11 @@ public class SettingsViewModel : ViewModelBase
     private readonly AppNavigation _appNavigation;
     private int _dailyGoalMl = 2000;
     private bool _notificationsEnabled = true;
-    private AppTheme _selectedTheme = AppTheme.Unspecified;
+    private AppTheme _selectedTheme = AppTheme.Dark;
     private string _statusMessage = "Personalize sua experiência";
     private string _accountName = "Convidado";
-    private string _accountEmail = "offline@hydra.app";
+    private string _accountEmail = "offline@hidrate.app";
+    private string _accountPassword = string.Empty;
     private bool _isBusy;
 
     public SettingsViewModel(
@@ -27,12 +28,10 @@ public class SettingsViewModel : ViewModelBase
         _sessionService = sessionService;
         _appNavigation = appNavigation;
         SaveCommand = new Command(async () => await SaveAsync(), () => !IsBusy);
-        ToggleThemeCommand = new Command<string>(theme => ApplyTheme(theme));
         LogoutCommand = new Command(async () => await LogoutAsync(), () => !IsBusy);
     }
 
     public ICommand SaveCommand { get; }
-    public ICommand ToggleThemeCommand { get; }
     public ICommand LogoutCommand { get; }
 
     public int DailyGoalMl
@@ -71,6 +70,12 @@ public class SettingsViewModel : ViewModelBase
         set => SetProperty(ref _accountEmail, value);
     }
 
+    public string AccountPassword
+    {
+        get => _accountPassword;
+        set => SetProperty(ref _accountPassword, value);
+    }
+
     public bool IsBusy
     {
         get => _isBusy;
@@ -79,6 +84,7 @@ public class SettingsViewModel : ViewModelBase
             if (SetProperty(ref _isBusy, value))
             {
                 (SaveCommand as Command)?.ChangeCanExecute();
+                (LogoutCommand as Command)?.ChangeCanExecute();
             }
         }
     }
@@ -87,18 +93,18 @@ public class SettingsViewModel : ViewModelBase
     {
         var session = _sessionService.CurrentSession;
         AccountName = string.IsNullOrWhiteSpace(session?.Name) ? "Convidado" : session!.Name;
-        AccountEmail = string.IsNullOrWhiteSpace(session?.Email) ? "offline@hydra.app" : session!.Email;
+        AccountEmail = string.IsNullOrWhiteSpace(session?.Email) ? "offline@hidrate.app" : session!.Email;
+        AccountPassword = session?.Password ?? string.Empty;
 
         var user = await EnsureUserAsync();
         DailyGoalMl = user.DailyGoalMl;
         NotificationsEnabled = user.NotificationsEnabled;
-        SelectedTheme = user.PreferredTheme switch
+        SelectedTheme = AppTheme.Dark;
+
+        if (Application.Current != null)
         {
-            "light" => AppTheme.Light,
-            "dark" => AppTheme.Dark,
-            _ => AppTheme.Unspecified
-        };
-        Application.Current!.UserAppTheme = SelectedTheme;
+            Application.Current.UserAppTheme = AppTheme.Dark;
+        }
     }
 
     private async Task SaveAsync()
@@ -112,14 +118,17 @@ public class SettingsViewModel : ViewModelBase
         try
         {
             var user = await EnsureUserAsync();
+            if (string.IsNullOrWhiteSpace(AccountName) || string.IsNullOrWhiteSpace(AccountEmail) || string.IsNullOrWhiteSpace(AccountPassword))
+            {
+                StatusMessage = "Preencha nome, e-mail e senha para salvar.";
+                return;
+            }
+
+            await _sessionService.UpdateProfileAsync(AccountName, AccountEmail, AccountPassword);
+            user.Name = AccountName.Trim();
             user.DailyGoalMl = DailyGoalMl;
             user.NotificationsEnabled = NotificationsEnabled;
-            user.PreferredTheme = SelectedTheme switch
-            {
-                AppTheme.Light => "light",
-                AppTheme.Dark => "dark",
-                _ => "system"
-            };
+            user.PreferredTheme = "dark";
             user.LastUpdatedAt = DateTime.UtcNow;
             await _userRepository.UpdateAsync(user);
             StatusMessage = "Configurações salvas com sucesso.";
@@ -131,21 +140,6 @@ public class SettingsViewModel : ViewModelBase
         finally
         {
             IsBusy = false;
-        }
-    }
-
-    private void ApplyTheme(string? theme)
-    {
-        SelectedTheme = theme?.ToLowerInvariant() switch
-        {
-            "light" => AppTheme.Light,
-            "dark" => AppTheme.Dark,
-            _ => AppTheme.Unspecified
-        };
-
-        if (Application.Current != null)
-        {
-            Application.Current.UserAppTheme = SelectedTheme;
         }
     }
 
@@ -182,7 +176,7 @@ public class SettingsViewModel : ViewModelBase
             LastUpdatedAt = DateTime.UtcNow,
             DailyGoalMl = 2000,
             OnboardingCompleted = true,
-            PreferredTheme = "system",
+            PreferredTheme = "dark",
             NotificationsEnabled = true
         };
         await _userRepository.AddAsync(user);

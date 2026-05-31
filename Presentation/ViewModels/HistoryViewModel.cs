@@ -92,7 +92,8 @@ public class HistoryViewModel : ViewModelBase
             }
 
             await _hydrationService.ClearTodayAsync(user.Id);
-            await LoadAsync();
+            Entries.Clear();
+            TodaySummary = "Sem registros por enquanto";
         }
         finally
         {

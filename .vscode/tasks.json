@@ -1,0 +1,17 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build-api",
+            "command": "dotnet",
+            "type": "process",
+            "args": ["build", "${workspaceFolder}/Backend/Hydra.Api.csproj"]
+        },
+        {
+            "label": "build-app",
+            "command": "dotnet",
+            "type": "process",
+            "args": ["build", "${workspaceFolder}/Water-reminder.csproj"]
+        }
+    ]
+}

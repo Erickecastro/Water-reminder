@@ -5,19 +5,27 @@ namespace Water_reminder;
 
 public partial class App : Application
 {
-	private readonly IServiceProvider _serviceProvider;
+    private readonly IServiceProvider _serviceProvider;
 
-	public App(IServiceProvider serviceProvider)
-	{
-		_serviceProvider = serviceProvider;
-		InitializeComponent();
-	}
+    public App(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+        InitializeComponent();
+        UserAppTheme = AppTheme.Dark;
+    }
 
-	protected override Window CreateWindow(IActivationState? activationState)
-	{
-		var sessionService = _serviceProvider.GetRequiredService<IUserSessionService>();
-		sessionService.InitializeAsync().GetAwaiter().GetResult();
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        var sessionService = _serviceProvider.GetRequiredService<IUserSessionService>();
+        try
+        {
+            sessionService.InitializeAsync().GetAwaiter().GetResult();
+        }
+        catch
+        {
+            // Keep startup resilient; the login screen can recover with an empty session.
+        }
 
-		return _serviceProvider.GetRequiredService<AppNavigation>().CreateRootWindow();
-	}
+        return _serviceProvider.GetRequiredService<AppNavigation>().CreateRootWindow();
+    }
 }

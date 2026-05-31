@@ -4,6 +4,8 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Water-reminder", "Water-reminder.csproj", "{FFF17A41-2957-97B5-1831-6186D99B927B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hydra.Api", "Backend\Hydra.Api.csproj", "{2A8EADD2-89C2-47FF-A0E2-2F74ECFE9230}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,6 +16,10 @@ Global
 		{FFF17A41-2957-97B5-1831-6186D99B927B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFF17A41-2957-97B5-1831-6186D99B927B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFF17A41-2957-97B5-1831-6186D99B927B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A8EADD2-89C2-47FF-A0E2-2F74ECFE9230}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A8EADD2-89C2-47FF-A0E2-2F74ECFE9230}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A8EADD2-89C2-47FF-A0E2-2F74ECFE9230}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A8EADD2-89C2-47FF-A0E2-2F74ECFE9230}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
