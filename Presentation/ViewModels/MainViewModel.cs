@@ -193,7 +193,7 @@ public class MainViewModel : ViewModelBase
             {
                 DailyGoal = 2000;
                 TodayTotal = 0;
-                LastIntakeLabel = "Nenhum registro hoje";
+                LastIntakeLabel = "Sem registros hoje";
             }
             else
             {
