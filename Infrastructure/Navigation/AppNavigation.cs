@@ -8,9 +8,7 @@ public class AppNavigation
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IUserSessionService _sessionService;
-    private MainPage? _mainPage;
-    private HistoryPage? _historyPage;
-    private SettingsPage? _settingsPage;
+    private MainContainerPage? _mainContainerPage;
     private bool _isTransitioning;
 
     public AppNavigation(IServiceProvider serviceProvider, IUserSessionService sessionService)
@@ -68,22 +66,23 @@ public class AppNavigation
 
     public void NavigateToMain()
     {
-        _ = SetRootPageAsync(GetMainPage());
+        GetMainPage().ShowHome();
     }
 
     public void NavigateToHistory()
     {
-        _ = SetRootPageAsync(_historyPage ??= _serviceProvider.GetRequiredService<HistoryPage>());
+        GetMainPage().ShowHistory();
     }
 
     public void NavigateToSettings()
     {
-        _ = SetRootPageAsync(_settingsPage ??= _serviceProvider.GetRequiredService<SettingsPage>());
+        GetMainPage().ShowSettings();
     }
 
-    private MainPage GetMainPage()
+    private MainContainerPage GetMainPage()
     {
-        return _mainPage ??= _serviceProvider.GetRequiredService<MainPage>();
+        return _mainContainerPage ??=
+            _serviceProvider.GetRequiredService<MainContainerPage>();
     }
 
     private async Task SetRootPageAsync(Page page)

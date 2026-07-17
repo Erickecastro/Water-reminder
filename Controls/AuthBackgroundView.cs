@@ -1,4 +1,5 @@
 using Microsoft.Maui.Graphics;
+using Microsoft.Maui.Controls;
 
 namespace Water_reminder.Controls;
 
@@ -15,61 +16,69 @@ internal class AuthBackgroundDrawable : IDrawable
 {
     public void Draw(ICanvas canvas, RectF dirtyRect)
     {
-        var w = dirtyRect.Width;
-        var h = dirtyRect.Height;
+        float w = dirtyRect.Width;
+        float h = dirtyRect.Height;
 
-        var basePaint = new LinearGradientPaint
+        // Fundo
+        var background = new LinearGradientPaint
         {
             StartPoint = new Point(0, 0),
             EndPoint = new Point(1, 1),
             GradientStops =
             [
-                new PaintGradientStop(0, Color.FromArgb("#02050A")),
-                new PaintGradientStop(0.44f, Color.FromArgb("#07101F")),
-                new PaintGradientStop(1, Color.FromArgb("#111C33"))
+                new PaintGradientStop(0f, Color.FromArgb("#050A14")),
+                new PaintGradientStop(0.5f, Color.FromArgb("#0A1930")),
+                new PaintGradientStop(1f, Color.FromArgb("#10294A"))
             ]
         };
-        canvas.SetFillPaint(basePaint, dirtyRect);
+
+        canvas.SetFillPaint(background, dirtyRect);
         canvas.FillRectangle(dirtyRect);
 
-        DrawRibbon(canvas, w, h, -0.12f, "#05070D", "#0A1222", 0.92f);
-        DrawRibbon(canvas, w, h, 0.24f, "#0B172A", "#15233D", 0.72f);
-        DrawRibbon(canvas, w, h, 0.62f, "#08101E", "#182744", 0.54f);
+        // Brilho superior direito
+        canvas.FillColor = Color.FromArgb("#4FC3F7").WithAlpha(0.08f);
+        canvas.FillCircle(w * 0.92f, h * 0.12f, w * 0.28f);
 
-        var softShade = new PathF();
-        softShade.MoveTo(w * -0.12f, h * 1.08f);
-        softShade.CurveTo(w * 0.02f, h * 0.76f, w * -0.08f, h * 0.60f, w * 0.24f, h * 0.42f);
-        softShade.CurveTo(w * 0.58f, h * 0.23f, w * 0.62f, h * 0.10f, w * 0.74f, h * -0.04f);
-        softShade.LineTo(w * -0.12f, h * -0.04f);
-        softShade.Close();
-        canvas.FillColor = Color.FromRgba(0, 0, 0, 0.26f);
-        canvas.FillPath(softShade);
+        // Círculo central
+        canvas.FillColor = Color.FromArgb("#81D4FA").WithAlpha(0.05f);
+        canvas.FillCircle(w * 0.30f, h * 0.35f, w * 0.22f);
+
+        // Círculo inferior
+        canvas.FillColor = Color.FromArgb("#4FC3F7").WithAlpha(0.04f);
+        canvas.FillCircle(w * 0.80f, h * 0.72f, w * 0.30f);
+
+        DrawWave(canvas, w, h, 0.78f, "#2B79C2", 0.18f);
+        DrawWave(canvas, w, h, 0.84f, "#4AA3F0", 0.12f);
     }
 
-    private static void DrawRibbon(ICanvas canvas, float w, float h, float xOffset, string dark, string light, float opacity)
+    private static void DrawWave(
+        ICanvas canvas,
+        float w,
+        float h,
+        float y,
+        string color,
+        float alpha)
     {
         var path = new PathF();
-        path.MoveTo(w * (xOffset + 0.08f), h * 1.05f);
-        path.CurveTo(w * (xOffset + 0.18f), h * 0.84f, w * (xOffset + 0.02f), h * 0.63f, w * (xOffset + 0.30f), h * 0.48f);
-        path.CurveTo(w * (xOffset + 0.58f), h * 0.32f, w * (xOffset + 0.50f), h * 0.15f, w * (xOffset + 0.82f), h * -0.08f);
-        path.LineTo(w * (xOffset + 1.05f), h * -0.08f);
-        path.CurveTo(w * (xOffset + 0.88f), h * 0.22f, w * (xOffset + 1.02f), h * 0.45f, w * (xOffset + 0.64f), h * 0.60f);
-        path.CurveTo(w * (xOffset + 0.32f), h * 0.72f, w * (xOffset + 0.42f), h * 0.93f, w * (xOffset + 0.20f), h * 1.08f);
+
+        path.MoveTo(0, h);
+
+        path.LineTo(0, h * y);
+
+        path.CurveTo(
+            w * 0.20f, h * (y - 0.05f),
+            w * 0.45f, h * (y + 0.04f),
+            w * 0.70f, h * (y - 0.03f));
+
+        path.CurveTo(
+            w * 0.85f, h * (y - 0.08f),
+            w * 0.95f, h * (y + 0.03f),
+            w, h * y);
+
+        path.LineTo(w, h);
         path.Close();
 
-        var bounds = new RectF(Math.Min(0, w * xOffset), 0, w * 1.4f, h);
-        var paint = new LinearGradientPaint
-        {
-            StartPoint = new Point(0, 0),
-            EndPoint = new Point(1, 1),
-            GradientStops =
-            [
-                new PaintGradientStop(0, Color.FromArgb(dark).WithAlpha(opacity)),
-                new PaintGradientStop(1, Color.FromArgb(light).WithAlpha(opacity))
-            ]
-        };
-
-        canvas.SetFillPaint(paint, bounds);
+        canvas.FillColor = Color.FromArgb(color).WithAlpha(alpha);
         canvas.FillPath(path);
     }
 }

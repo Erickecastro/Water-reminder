@@ -40,11 +40,6 @@ public partial class BottomNavBar : ContentView
 
     private async Task SelectAsync(VisualElement element, string tab)
     {
-        if (ActiveTab != tab)
-        {
-            NavigateRequested?.Invoke(this, tab);
-        }
-
         await Task.WhenAll(
             element.ScaleTo(0.94, 60, Easing.CubicOut),
             element.FadeTo(0.86, 60, Easing.CubicOut));
@@ -52,6 +47,11 @@ public partial class BottomNavBar : ContentView
         await Task.WhenAll(
             element.ScaleTo(1, 90, Easing.CubicOut),
             element.FadeTo(1, 80, Easing.CubicOut));
+
+        if (ActiveTab != tab)
+        {
+            NavigateRequested?.Invoke(this, tab);
+        }
     }
 
     private void UpdateVisualState()

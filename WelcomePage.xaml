@@ -35,12 +35,7 @@
                         Spacing="10"
                         VerticalOptions="Center">
                         <Label
-                            Text="&#x1F964;"
-                            FontSize="30"
-                            VerticalTextAlignment="Center"
-                            LineBreakMode="NoWrap" />
-                        <Label
-                            Text="Hidrat&#xE9;"
+                            Text="Hidraté"
                             FontFamily="Cascadia Code"
                             FontSize="38"
                             TextColor="#F6F1F8"

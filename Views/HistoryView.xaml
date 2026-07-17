@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentView
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Water_reminder.Controls"
+    x:Class="Water_reminder.Views.HistoryView">
+
+    <Grid>
+        <controls:AuthBackgroundView />
+
+        <Grid RowDefinitions="*,Auto">
+            <Grid Grid.Row="0" RowDefinitions="Auto,*" Padding="20" RowSpacing="16">
+                <VerticalStackLayout x:Name="HeaderContainer">
+                    <Label Text="Histórico de hoje" FontSize="26" FontAttributes="Bold" TextColor="#F6F1F8" />
+                    <Label Text="{Binding TodaySummary}" FontSize="14" TextColor="#B9AFC0" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout x:Name="ContentContainer" Grid.Row="1" Spacing="12">
+                    <Button Text="Limpar histórico de hoje"
+                            BackgroundColor="#2D7AFB"
+                            TextColor="#FFFFFF"
+                            BorderColor="{StaticResource Primary}"
+                            BorderWidth="1"
+                            CornerRadius="22"
+                            HeightRequest="44"
+                            FontSize="13"
+                            Pressed="OnActionPressed"
+                            Released="OnActionReleased"
+                            Clicked="OnClearHistoryClicked" />
+
+                    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+                        <CollectionView x:Name="HistoryList" ItemsSource="{Binding Entries}" SelectionMode="None">
+                            <CollectionView.EmptyView>
+                                <Label Text="Nenhum consumo registrado hoje."
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       TextColor="#B9AFC0" />
+                            </CollectionView.EmptyView>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Padding="14"
+                                            Margin="0,6"
+                                            Stroke="{AppThemeBinding Light=#D9E4F2, Dark=#6A8CA8C8}"
+                                            StrokeShape="RoundRectangle 16">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="#D20B1030" Offset="0" />
+                                                <GradientStop Color="#B8070A22" Offset="0.55" />
+                                                <GradientStop Color="#D0162448" Offset="1" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                            <Label Text="&#x1F4A7;" FontSize="20" VerticalOptions="Center"/>
+                                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                                <Label Text="{Binding AmountMl, StringFormat='{0} ml'}" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource White}}" />
+                                                <Label Text="{Binding Source}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource TextSecondary}}" />
+                                            </VerticalStackLayout>
+                                            <Label Grid.Column="2" Text="{Binding TimeText}" VerticalOptions="Center" TextColor="{StaticResource AccentBlue}" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </RefreshView>
+                </VerticalStackLayout>
+            </Grid>
+        </Grid>
+    </Grid>
+
+</ContentView>

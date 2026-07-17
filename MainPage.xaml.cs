@@ -1,6 +1,5 @@
 using Hydra.Presentation.ViewModels;
 using Hydra.Infrastructure.Navigation;
-using System.ComponentModel;
 
 namespace Water_reminder;
 
@@ -9,19 +8,29 @@ public partial class MainPage : ContentPage
     private readonly MainViewModel _vm;
     private readonly AppNavigation _navigation;
 
+    private bool _loaded;
+
     public MainPage(MainViewModel viewModel, AppNavigation navigation)
     {
         InitializeComponent();
         _vm = viewModel;
         _navigation = navigation;
         BindingContext = _vm;
-        _vm.PropertyChanged += OnViewModelPropertyChanged;
     }
 
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
-        await _vm.LoadDataAsync();
+
+        if (_loaded)
+            return;
+
+        _loaded = true;
+
+        Dispatcher.Dispatch(async () =>
+        {
+            await _vm.LoadDataAsync();
+        });
     }
 
     private async void OnActionPressed(object? sender, EventArgs e)
@@ -40,19 +49,6 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private async void OnHydrationButtonClicked(object? sender, EventArgs e)
-    {
-        await CupMascot.CelebrateAsync();
-    }
-
-    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(MainViewModel.ProgressPercent))
-        {
-            ProgressCup.Progress = _vm.ProgressPercent;
-        }
-    }
-
     private void OnNavigateRequested(object? sender, string tab)
     {
         if (tab == "History")
@@ -65,4 +61,3 @@ public partial class MainPage : ContentPage
         }
     }
 }
-

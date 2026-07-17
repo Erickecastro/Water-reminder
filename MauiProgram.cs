@@ -9,6 +9,7 @@ using Hydra.Infrastructure.Navigation;
 using Hydra.Infrastructure.Session;
 using Plugin.LocalNotification;
 using Water_reminder.Controls;
+using Water_reminder.Views;
 
 #if ANDROID || IOS || MACCATALYST
 using Microsoft.Maui.Handlers;
@@ -75,6 +76,8 @@ public static class MauiProgram
         builder.Services.AddTransient<Hydra.Core.Interfaces.INotificationService, LocalNotificationService>();
         builder.Services.AddTransient<Hydra.Core.Interfaces.ISyncService, Hydra.Infrastructure.Sync.SyncService>();
 
+        builder.Services.AddSingleton<MainContainerPage>();
+
         builder.Services.AddSingleton<IUserSessionService, UserSessionService>();
         builder.Services.AddSingleton<AppNavigation>();
 
@@ -85,6 +88,9 @@ public static class MauiProgram
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<HistoryPage>();
         builder.Services.AddTransient<SettingsPage>();
+        builder.Services.AddSingleton<HomeView>();
+        builder.Services.AddSingleton<HistoryView>();
+        builder.Services.AddSingleton<SettingsView>();
 
         builder.Services.AddTransient<Hydra.Presentation.ViewModels.LoginViewModel>();
         builder.Services.AddTransient<Hydra.Presentation.ViewModels.MainViewModel>();

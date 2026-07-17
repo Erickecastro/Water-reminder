@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:Water_reminder.Controls"
+    x:Class="Water_reminder.MainContainerPage"
+    BackgroundColor="#050509">
+
+
+    <Grid>
+
+        <!-- Fundo global -->
+        <controls:AuthBackgroundView />
+
+
+        <Grid RowDefinitions="*,Auto">
+
+
+            <ContentView
+                x:Name="ContentHost"
+                Grid.Row="0"/>
+
+
+            <controls:BottomNavBar
+                x:Name="BottomNavigation"
+                Grid.Row="1"
+                ActiveTab="Home"
+                NavigateRequested="OnNavigateRequested"/>
+
+
+        </Grid>
+
+
+    </Grid>
+
+
+</ContentPage>
