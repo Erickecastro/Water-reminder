@@ -120,7 +120,6 @@ public static class MauiProgram
                 ?.CreateLogger(nameof(MauiProgram))
                 .LogError(ex, "Failed to initialize the local database.");
         }
-
         return app;
     }
 }

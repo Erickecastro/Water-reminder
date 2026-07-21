@@ -8,7 +8,6 @@ public partial class HomeView : ContentView
 
     private bool _loaded;
 
-
     public HomeView(MainViewModel viewModel)
     {
         InitializeComponent();
@@ -34,7 +33,6 @@ public partial class HomeView : ContentView
         }
     }
 
-
     private async void OnActionPressed(object? sender, EventArgs e)
     {
         if (sender is VisualElement element)
@@ -42,7 +40,6 @@ public partial class HomeView : ContentView
             await element.ScaleTo(0.96, 90, Easing.CubicOut);
         }
     }
-
 
     private async void OnActionReleased(object? sender, EventArgs e)
     {

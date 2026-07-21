@@ -26,7 +26,6 @@
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
   </PropertyGroup>
 
-  <!-- Configuracoes especificas para Windows -->
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
       <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
       <WindowsPackageType>None</WindowsPackageType>
@@ -79,7 +78,6 @@
     <!-- Local Notifications -->
     <PackageReference Include="Plugin.LocalNotification" Version="11.1.3" />
 
-    <!-- Connectivity (Removing old Plugin.Connectivity in favor of MAUI built-in) -->
   </ItemGroup>
 
 </Project>

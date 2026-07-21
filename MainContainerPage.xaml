@@ -9,18 +9,11 @@
 
 
     <Grid>
-
-        <!-- Fundo global -->
-        <controls:AuthBackgroundView />
-
-
         <Grid RowDefinitions="*,Auto">
-
 
             <ContentView
                 x:Name="ContentHost"
                 Grid.Row="0"/>
-
 
             <controls:BottomNavBar
                 x:Name="BottomNavigation"

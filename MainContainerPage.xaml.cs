@@ -10,6 +10,7 @@ public partial class MainContainerPage : ContentPage
 
     private string _currentTab = "Home";
 
+
     public MainContainerPage(
         HomeView homeView,
         HistoryView historyView,
@@ -21,8 +22,10 @@ public partial class MainContainerPage : ContentPage
         _historyView = historyView;
         _settingsView = settingsView;
 
+
         ShowHome();
     }
+
 
 
     public async void ShowHome()
@@ -31,10 +34,12 @@ public partial class MainContainerPage : ContentPage
     }
 
 
+
     public async void ShowHistory()
     {
         await SwitchContent(_historyView, "History");
     }
+
 
 
     public async void ShowSettings()
@@ -43,13 +48,17 @@ public partial class MainContainerPage : ContentPage
     }
 
 
+
+
     private async Task SwitchContent(View view, string targetTab)
     {
         if (ContentHost.Content == view)
             return;
 
 
+
         UpdateBottomBar(targetTab);
+
 
 
         int currentIndex = GetTabIndex(_currentTab);
@@ -62,17 +71,17 @@ public partial class MainContainerPage : ContentPage
         var oldView = ContentHost.Content as VisualElement;
 
 
+        view.TranslationX = 40 * direction;
+        view.Opacity = 0;
+
+
+
         ContentHost.Content = view;
 
-
-        view.TranslationX = 40 * direction;
-        view.Opacity = 0.95;
 
 
         if (oldView != null)
         {
-            oldView.TranslationX = 0;
-
             await oldView.TranslateTo(
                 -40 * direction,
                 0,
@@ -81,18 +90,25 @@ public partial class MainContainerPage : ContentPage
         }
 
 
+
+
         await Task.WhenAll(
+
             view.TranslateTo(
                 0,
                 0,
                 220,
                 Easing.CubicOut),
 
+
             view.FadeTo(
                 1,
                 220,
                 Easing.CubicOut)
+
         );
+
+
 
 
         if (oldView != null)
@@ -101,8 +117,12 @@ public partial class MainContainerPage : ContentPage
         }
 
 
+
         _currentTab = targetTab;
     }
+
+
+
 
 
     private void OnNavigateRequested(object? sender, string tab)
@@ -113,9 +133,11 @@ public partial class MainContainerPage : ContentPage
                 ShowHome();
                 break;
 
+
             case "History":
                 ShowHistory();
                 break;
+
 
             case "Settings":
                 ShowSettings();
@@ -123,10 +145,18 @@ public partial class MainContainerPage : ContentPage
         }
     }
 
+
+
+
+
     private void UpdateBottomBar(string tab)
     {
         BottomNavigation.ActiveTab = tab;
     }
+
+
+
+
 
     private static int GetTabIndex(string tab)
     {

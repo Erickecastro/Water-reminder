@@ -7,12 +7,14 @@
     x:Class="Water_reminder.Views.HistoryView">
 
     <Grid>
-        <controls:AuthBackgroundView />
-
         <Grid RowDefinitions="*,Auto">
             <Grid Grid.Row="0" RowDefinitions="Auto,*" Padding="20" RowSpacing="16">
                 <VerticalStackLayout x:Name="HeaderContainer">
-                    <Label Text="Histórico de hoje" FontSize="26" FontAttributes="Bold" TextColor="#F6F1F8" />
+                    <Label Text="Histórico de hoje"
+                           FontSize="26"
+                           FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           TextColor="#F6F1F8" />
                     <Label Text="{Binding TodaySummary}" FontSize="14" TextColor="#B9AFC0" />
                 </VerticalStackLayout>
 
