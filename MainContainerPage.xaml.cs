@@ -9,7 +9,7 @@ public partial class MainContainerPage : ContentPage
     private readonly SettingsView _settingsView;
 
     private string _currentTab = "Home";
-
+    private bool _isNavigating;
 
     public MainContainerPage(
         HomeView homeView,
@@ -22,141 +22,105 @@ public partial class MainContainerPage : ContentPage
         _historyView = historyView;
         _settingsView = settingsView;
 
-
-        ShowHome();
+        ContentHost.Content = _homeView;
+        UpdateBottomBar("Home");
     }
 
+    public Task ShowHome()
+        => SwitchContent(_homeView, "Home");
 
+    public Task ShowHistory()
+        => SwitchContent(_historyView, "History");
 
-    public async void ShowHome()
-    {
-        await SwitchContent(_homeView, "Home");
-    }
-
-
-
-    public async void ShowHistory()
-    {
-        await SwitchContent(_historyView, "History");
-    }
-
-
-
-    public async void ShowSettings()
-    {
-        await SwitchContent(_settingsView, "Settings");
-    }
-
-
-
+    public Task ShowSettings()
+        => SwitchContent(_settingsView, "Settings");
 
     private async Task SwitchContent(View view, string targetTab)
     {
-        if (ContentHost.Content == view)
+        if (_isNavigating)
             return;
 
+        if (ReferenceEquals(ContentHost.Content, view))
+            return;
 
+        _isNavigating = true;
 
-        UpdateBottomBar(targetTab);
-
-
-
-        int currentIndex = GetTabIndex(_currentTab);
-        int targetIndex = GetTabIndex(targetTab);
-
-
-        int direction = targetIndex > currentIndex ? 1 : -1;
-
-
-        var oldView = ContentHost.Content as VisualElement;
-
-
-        view.TranslationX = 40 * direction;
-        view.Opacity = 0;
-
-
-
-        ContentHost.Content = view;
-
-
-
-        if (oldView != null)
+        try
         {
-            await oldView.TranslateTo(
-                -40 * direction,
+            UpdateBottomBar(targetTab);
+
+            int currentIndex = GetTabIndex(_currentTab);
+            int targetIndex = GetTabIndex(targetTab);
+
+            int direction = targetIndex > currentIndex ? 1 : -1;
+
+            var oldView = ContentHost.Content as VisualElement;
+
+            view.TranslationX = 24 * direction;
+            view.InputTransparent = true;
+
+            ContentHost.Content = view;
+
+            Task? outgoingAnimation = null;
+
+            if (oldView != null)
+            {
+                oldView.InputTransparent = true;
+
+                outgoingAnimation = oldView.TranslateTo(
+                    -24 * direction,
+                    0,
+                    180,
+                    Easing.CubicIn);
+            }
+
+            await view.TranslateTo(
                 0,
-                160,
-                Easing.CubicIn);
+                0,
+                180,
+                Easing.CubicOut);
+
+            if (outgoingAnimation != null)
+                await outgoingAnimation;
+
+            if (oldView != null)
+            {
+                oldView.TranslationX = 0;
+                oldView.InputTransparent = false;
+            }
+
+            view.InputTransparent = false;
+
+            _currentTab = targetTab;
         }
-
-
-
-
-        await Task.WhenAll(
-
-            view.TranslateTo(
-                0,
-                0,
-                220,
-                Easing.CubicOut),
-
-
-            view.FadeTo(
-                1,
-                220,
-                Easing.CubicOut)
-
-        );
-
-
-
-
-        if (oldView != null)
+        finally
         {
-            oldView.TranslationX = 0;
+            _isNavigating = false;
         }
-
-
-
-        _currentTab = targetTab;
     }
 
-
-
-
-
-    private void OnNavigateRequested(object? sender, string tab)
+    private async void OnNavigateRequested(object? sender, string tab)
     {
-        switch(tab)
+        switch (tab)
         {
             case "Home":
-                ShowHome();
+                await ShowHome();
                 break;
-
 
             case "History":
-                ShowHistory();
+                await ShowHistory();
                 break;
 
-
             case "Settings":
-                ShowSettings();
+                await ShowSettings();
                 break;
         }
     }
-
-
-
-
 
     private void UpdateBottomBar(string tab)
     {
         BottomNavigation.ActiveTab = tab;
     }
-
-
-
-
 
     private static int GetTabIndex(string tab)
     {
