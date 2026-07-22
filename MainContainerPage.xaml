@@ -1,41 +1,15 @@
-<?xml version="1.0" encoding="utf-8" ?>
-
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:Water_reminder.Controls"
-    xmlns:views="clr-namespace:Water_reminder.Views"
     x:Class="Water_reminder.MainContainerPage"
-    BackgroundColor="#050509"
     Shell.NavBarIsVisible="False">
 
     <Grid RowDefinitions="*,Auto">
 
-        <!--
-            Todas as Views permanecem vivas durante toda a execução.
-            Nunca mais haverá troca de ContentView.
-        -->
-
-        <Grid
-            x:Name="PagesHost"
-            Grid.Row="0"
-            ClipToBounds="True">
-
-            <views:HomeView
-                x:Name="HomePage"
-                ZIndex="3" />
-
-            <views:HistoryView
-                x:Name="HistoryPage"
-                IsVisible="False"
-                ZIndex="2" />
-
-            <views:SettingsView
-                x:Name="SettingsPage"
-                IsVisible="False"
-                ZIndex="1" />
-
-        </Grid>
+        <ContentView
+            x:Name="ContentHost"
+            Grid.Row="0"/>
 
         <controls:BottomNavBar
             x:Name="BottomNavigation"

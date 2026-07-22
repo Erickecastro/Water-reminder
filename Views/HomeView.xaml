@@ -7,6 +7,9 @@
     x:Class="Water_reminder.Views.HomeView">
 
     <Grid>
+
+        <controls:AuthBackgroundView />
+
         <Grid RowDefinitions="*,Auto">
             <Grid Grid.Row="0" RowDefinitions="Auto,*" Padding="20,16,20,0" RowSpacing="12">
                 <VerticalStackLayout x:Name="HeaderContainer" Grid.Row="0" HorizontalOptions="Center" Spacing="4">

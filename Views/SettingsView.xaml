@@ -7,6 +7,9 @@
     x:Class="Water_reminder.Views.SettingsView">
 
     <Grid>
+
+        <controls:AuthBackgroundView />
+
         <Grid RowDefinitions="*,Auto">
             <ScrollView Grid.Row="0">
                 <VerticalStackLayout x:Name="ContentContainer" Padding="20" Spacing="16">

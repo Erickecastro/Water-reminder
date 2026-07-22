@@ -7,6 +7,7 @@
     BackgroundColor="#050509">
 
     <Grid>
+
         <controls:AuthBackgroundView />
 
         <Grid Padding="28">
