@@ -8,8 +8,6 @@
 
     <Grid>
 
-        <controls:AuthBackgroundView />
-
         <Grid RowDefinitions="*,Auto">
             <Grid Grid.Row="0" RowDefinitions="Auto,*" Padding="20" RowSpacing="16">
                 <VerticalStackLayout x:Name="HeaderContainer">
